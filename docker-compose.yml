@@ -1,0 +1,103 @@
+version: "3.9"
+
+x-name:
+ - &NAME '<TEMPLATE>'
+ - &NET '<TEMPLATE>_net'
+
+x-variables:
+ - &DB_HOST 'db'
+ - &DB_ROOT_PASSWORD 'password'
+ - &DB_DATABASE 'db'
+ - &DB_USERNAME 'someuser'
+ - &DB_PASSWORD 'somepassword'
+
+x-template: &default-template
+  environment:
+    TZ: 'Europe/Amsterdam'
+  networks:
+    - net
+  restart: "unless-stopped"
+  volumes:
+    - '/etc/localtime:/etc/localtime:ro'
+
+#x-secret-permissions: &secret_permission
+#  mode: 0400
+#  uid: '1000'
+#  gid: '1000'
+
+
+
+#Docker Networks
+networks:
+  net:
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: 192.168.31.0/29 #192.168.31.0 - 192.168.31.7
+    driver_opts:
+      com.docker.network.bridge.name: *NET
+
+#SECRETS
+
+#secrets:
+  #KEY1:
+    #file: ~/somefilename
+  #KEY2:
+    #file: ./somefilename2
+
+volumes:
+  db:
+  data:
+
+services:
+  *NAME:
+    <<: *default-template
+    container_name: *NAME
+    hostname: *NAME
+
+    build: src
+    #image: docker.pkg.github.com/vslcatena/docker-<reponame>/docker-<reponame>image:latest
+ 
+    #depends_on:
+    #  - APP1
+    #  - APP2
+    #image: 
+    #volumes_from:
+    #  - db
+    #  - data
+#    secrets:
+#      - source: KEY1
+#        <<: *secret_permission
+    volumes:
+       - './html:/var/www/html'
+    user: "1000:1000"
+
+  mysql:
+    <<: *default-template
+    image: 'mysql/mysql-server:8.0'
+    hostname: db
+    ports:
+        - 3306:3306'
+    environment:
+        MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+        MYSQL_ROOT_HOST: "%"
+        MYSQL_DATABASE: '${DB_DATABASE}'
+        MYSQL_USER: '${DB_USERNAME}'
+        MYSQL_PASSWORD: '${DB_PASSWORD}'
+        MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+        - 'db:/var/lib/mysql'
+
+  #phpmyadmin
+  laravel.pma:
+    <<: *default-template
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+        PMA_HOST: db
+        PMA_USER: root
+        PMA_PASSWORD: '${DB_PASSWORD}'
+    ports:
+        - '8888:80'
+    networks:
+        - net
