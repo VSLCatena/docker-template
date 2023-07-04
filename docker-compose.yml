@@ -1,8 +1,10 @@
 version: "3.9"
 
+#vervang project met naam van primaire app
+
 x-name:
- - &NAME '<TEMPLATE>'
- - &NET '<TEMPLATE>_net'
+ - &NAME 'project'
+ - &NET 'project_net'
 
 x-variables:
  - &DB_HOST 'db'
@@ -47,14 +49,14 @@ networks:
     #file: ./somefilename2
 
 volumes:
-  db:
-  data:
+  db_data:
+  project_data:
 
 services:
-  *NAME:
+  project.php
     <<: *default-template
-    container_name: *NAME
-    hostname: *NAME
+    container_name: project.php
+    hostname: php
 
     build: src
     #image: docker.pkg.github.com/vslcatena/docker-<reponame>/docker-<reponame>image:latest
@@ -73,19 +75,23 @@ services:
        - './html:/var/www/html'
     user: "1000:1000"
 
-  mysql:
+  db:
     <<: *default-template
-    image: 'mysql/mysql-server:8.0'
+    image: 'mariadb:latest'
+    container_name: project.db
     hostname: db
     ports:
         - 3306:3306'
+   secrets:
+      - source: KEY1  
     environment:
+       # MYSQL_ROOT_PASSWORD: /run/secrets/KEY1
         MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
         MYSQL_ROOT_HOST: "%"
         MYSQL_DATABASE: '${DB_DATABASE}'
         MYSQL_USER: '${DB_USERNAME}'
         MYSQL_PASSWORD: '${DB_PASSWORD}'
-        MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        MYSQL_ALLOW_EMPTY_PASSWORD: no
     volumes:
         - 'db:/var/lib/mysql'
 
