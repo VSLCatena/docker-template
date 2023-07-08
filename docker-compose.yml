@@ -42,11 +42,11 @@ networks:
 
 #SECRETS
 
-#secrets:
-  #KEY1:
-    #file: ~/somefilename
+secrets:
+  SECRET1:
+    file: ./secrets/secret1.txt
   #KEY2:
-    #file: ./somefilename2
+    #file: ~/somefilename2
 
 volumes:
   db_data:
@@ -68,8 +68,8 @@ services:
     #volumes_from:
     #  - db
     #  - data
-#    secrets:
-#      - source: KEY1
+    secrets:
+      - source: SECRET1
 #        <<: *secret_permission
     volumes:
        - './html:/var/www/html'
