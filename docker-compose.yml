@@ -80,7 +80,7 @@ services:
     profiles:
       - dev
     environment:
-      PMA_HOST: '${DB_HOST:-db}'
+      PMA_HOST: '${MYSQL_HOST:-db}'
       PMA_USER: root
       PMA_PASSWORD: '${MYSQL_ROOT_PASSWORD:-dbrootpassword}'
       TZ: Europe/Amsterdam
