@@ -1,4 +1,4 @@
-FROM php:apache
+FROM php:8.2-apache
 
 
 #
@@ -19,6 +19,8 @@ FROM php:apache
 #
 # Add files
 #
+
+COPY html/index.php /var/www/html/
 
 #
 # Change defaults
