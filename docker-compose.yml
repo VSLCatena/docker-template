@@ -28,7 +28,8 @@ services:
     hostname: php
     secrets:
       - SECRET1
-    #image: docker.pkg.github.com/vslcatena/docker-<reponame>/docker-<reponame>image:latest
+    pull_policy: missing
+    image: ghcr.io/vslcatena/docker-template:master
     build:
       context: ./src
       dockerfile: Dockerfile
