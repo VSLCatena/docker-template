@@ -24,11 +24,15 @@ secrets:
 
 services:
   project.php:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT}.rule=Host(`${PROJECT_FQDN}`)"
+      - "traefik.http.routers.${PROJECT}.entrypoints=${PROJECT_ENTRYPOINT}"  
     container_name: project.php
     hostname: php
     secrets:
       - SECRET1
-    pull_policy: missing
+    pull_policy: if_not_present
     image: ghcr.io/vslcatena/docker-template:master
     build:
       context: ./src
