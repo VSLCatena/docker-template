@@ -1,6 +1,4 @@
-FROM php:8.3-apache
-
-
+FROM php:8-apache
 #
 # User Actions
 #
@@ -20,7 +18,14 @@ FROM php:8.3-apache
 # Add files
 #
 
-COPY html/index.php /var/www/html/
+COPY html/ /var/www/html/
+RUN chown -R www-data:www-data /var/www/html/data
+
+#
+# Setup persistent volumes
+#
+
+VOLUME ["/var/www/html"]
 
 #
 # Change defaults
