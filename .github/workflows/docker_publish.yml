@@ -6,19 +6,16 @@ name: Docker
 # documentation.
 
 on:
-  workflow_dispatch:
-  #schedule:
-  #  - cron: '28 1 * * *'
-  push:
-   tags: [ 'v*.*.*' ]
-  #pull_request:
-  #  branches: [ "main" ]
+  release:
+    types: [published]
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  # The release version prefixed with 'v' example: v1.0.0
+  RELEASE_VERSION_PREFIXED: ${{ github.event_name == 'release' && github.event.release.tag_name }}
 
 
 jobs:
@@ -35,7 +32,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-          
+
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
@@ -86,7 +83,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            VERSION=${{ env.VERSION_MW }}
+            VERSION=${{ env.RELEASE_VERSION_PREFIXED }}
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
