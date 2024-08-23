@@ -8,6 +8,10 @@ name: Docker
 on:
   release:
     types: [published]
+  pull_request:
+    types: [opened, reopened, labeled, synchronize]
+    branches:
+      - master
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -20,8 +24,14 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    # Only run this workflow when a release is published or a PR contains the label 'alpha-release'
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'alpha-release')  }}
+    concurrency:
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+      group: docker-publish-${{ github.event_name }}
+
     permissions:
       contents: read
       packages: write
@@ -32,6 +42,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Release Drafter version on PR
+        if: github.event_name == 'pull_request'
+        id: release-drafter
+
+        uses: release-drafter/release-drafter@v6
+        with:
+          disable-autolabeler: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Ajust package version when publishing from a pull request
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "RELEASE_VERSION_PREFIXED=${{ steps.drafter.outputs.resolved_version }}-alpha.${{ github.run_number }}" | tee -a $GITHUB_ENV
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
