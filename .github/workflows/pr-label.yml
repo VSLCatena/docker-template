@@ -30,6 +30,7 @@ jobs:
               'security',
               'minor',
               'patch',
+              'ci'
             ];
             const missingLabels = expectedLabels.filter(label => !labels.includes(label));
             if (missingLabels.length == expectedLabels.length) {
