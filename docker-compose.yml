@@ -30,6 +30,13 @@ services:
       - "traefik.http.routers.${PROJECT}.entrypoints=${PROJECT_ENTRYPOINT}"  
     container_name: project.php
     hostname: php
+    resources:
+      limits:
+        cpus: '0.05'
+        memory: 128M
+      reservations:
+        cpus: '0.05'
+        memory: 64M
     secrets:
       - SECRET1
     pull_policy: if_not_present
@@ -61,6 +68,13 @@ services:
     image: 'mariadb:10'
     container_name: project.db
     hostname: db
+    resources:
+      limits:
+        cpus: '0.05'
+        memory: 512M
+      reservations:
+        cpus: '0.05'
+        memory: 64M
     restart: always
     ports:
       - 3306:3306
@@ -84,6 +98,13 @@ services:
     image: ghcr.io/linuxserver/phpmyadmin
     profiles:
       - dev
+    resources:
+      limits:
+        cpus: '0.05'
+        memory: 512M
+      reservations:
+        cpus: '0.05'
+        memory: 32M
     environment:
       PMA_HOST: '${MYSQL_HOST:-db}'
       PMA_USER: root
