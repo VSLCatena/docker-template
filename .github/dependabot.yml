@@ -9,7 +9,11 @@ updates:
     directory: "src"
     schedule:
       interval: "weekly"
+    allow:
+      - dependency-type: "all
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    allow:
+      - dependency-type: "all
