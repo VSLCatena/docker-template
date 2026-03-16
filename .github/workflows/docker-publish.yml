@@ -47,7 +47,7 @@ jobs:
         if: github.event_name == 'pull_request'
         id: release-drafter
 
-        uses: release-drafter/release-drafter@v6
+        uses: release-drafter/release-drafter@v7
         with:
           disable-autolabeler: false
         env:
